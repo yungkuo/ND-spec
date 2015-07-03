@@ -14,30 +14,30 @@ import libtiff
 scan = 5
 displacement =50
 
-f='E:/ND/27.tiff'
+f='E:/ND/take2 original polarity/0V 004.tif'
 mov = libtiff.TiffFile(f)
 movie = mov.get_tiff_array()
 movie = np.array(movie[:,:,:],dtype='d')
 
-c1='E:/ND/c1.tiff'
+c1='E:/ND/c1.tif'
 mov = libtiff.TiffFile(c1)
 c1 = mov.get_tiff_array()
-c1 = np.mean(c1[0,50:,:],dtype='d', axis=0)-np.mean(c1[0,0:50,:],dtype='d', axis=0)
+c1 = np.mean(c1[0,50:,:],dtype='d', axis=0)-np.mean(c1[0,0:2,:],dtype='d', axis=0)
 
-c2='E:/ND/c2.tiff'
+c2='E:/ND/c2.tif'
 mov = libtiff.TiffFile(c2)
 c2 = mov.get_tiff_array()
-c2 = np.mean(c2[0,50:,:],dtype='d', axis=0)-np.mean(c2[0,0:50,:],dtype='d', axis=0)
+c2 = np.mean(c2[0,50:,:],dtype='d', axis=0)-np.mean(c2[0,0:2,:],dtype='d', axis=0)
 
-c3='E:/ND/c3.tiff'
+c3='E:/ND/c3.tif'
 mov = libtiff.TiffFile(c3)
 c3 = mov.get_tiff_array()
-c3 = np.mean(c3[0,50:,:],dtype='d', axis=0)-np.mean(c3[0,0:50,:],dtype='d', axis=0)
+c3 = np.mean(c3[0,50:,:],dtype='d', axis=0)-np.mean(c3[0,0:2,:],dtype='d', axis=0)
 
-lamp='E:/ND/lamp.tiff'
+lamp='E:/ND/lamp.tif'
 mov = libtiff.TiffFile(lamp)
 lamp = mov.get_tiff_array()
-lamp = np.mean(lamp[0,50:,:],dtype='d', axis=0)-np.mean(lamp[0,0:50,:],dtype='d', axis=0)
+lamp = np.mean(lamp[0,50:,:],dtype='d', axis=0)-np.mean(lamp[0,0:2,:],dtype='d', axis=0)
 
 frame=len(movie[:,0,0])
 row=len(movie[0,:,0])
@@ -65,7 +65,7 @@ def movingaverage(interval, window_size):
         window = np.ones(int(window_size))/float(window_size)
         return np.convolve(interval, window, 'same')
         
-window_size=5
+window_size=10
 c1ds = movingaverage(c1d, window_size)
 c2ds = movingaverage(c2d, window_size)
 c3ds = movingaverage(c3d, window_size)
@@ -117,10 +117,12 @@ for i in range(len(pt)):
     bg = np.mean(movie[pt[i,1]-scan-displacement:pt[i,1]+scan-displacement, :], axis=0)
     spec_bgcr = spec-bg
     
-    ax[i*2].imshow(movie[pt[i,1]-scan:pt[i,1]+scan, :], cmap='gray')
-    ax[i*2+1].imshow(movie[pt[i,1]-scan-displacement:pt[i,1]+scan-displacement, :], cmap='gray')    
-    ax[i*2+2].plot(p, spec)
-    ax[i*2+2].plot(p, bg)
-    ax[i*2+3].plot(p, spec_bgcr)
-    ax[i*2+2].set_xlim(p.min(), p.max())
-    ax[i*2+3].set_xlim(p.min(), p.max())
+    ax[i*4].imshow(movie[pt[i,1]-scan:pt[i,1]+scan, :], cmap='gray')
+    ax[i*4+1].imshow(movie[pt[i,1]-scan-displacement:pt[i,1]+scan-displacement, :], cmap='gray')    
+    ax[i*4+2].plot(p, spec)
+    ax[i*4+2].plot(p, bg)
+    ax[i*4+3].plot(p, spec_bgcr)
+    ax[i*4+2].set_xlim(p.min(), p.max())
+    ax[i*4+3].set_xlim(p.min(), p.max())
+    
+    print np.sum(spec_bgcr)
